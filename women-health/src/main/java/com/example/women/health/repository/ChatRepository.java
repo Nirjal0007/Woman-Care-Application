@@ -1,0 +1,9 @@
+package com.example.women.health.repository;
+
+import com.example.women.health.model.Chat;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+public interface ChatRepository extends JpaRepository<Chat, Long> {
+    List<Chat> findByUserIdOrderByTimestampAsc(Long userId);
+}

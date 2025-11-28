@@ -1,0 +1,134 @@
+:root {
+  --bg: #ffeef7;         /* soft light pink background */
+  --panel: #fffafd;      /* very light pink panels */
+  --muted: #b56576;      /* muted rose text */
+  --text: #4a2c2a;       /* deep warm brown for readability */
+  --brand: #ff99c8;      /* bubblegum pink */
+  --brand2: #ffc8dd;     /* cotton-candy pink */
+  --stroke: #ffd6e8;     /* soft border */
+}
+
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial}
+a{color:inherit}
+
+.app{min-height:100%;display:grid;grid-template-rows:auto 1fr auto}
+.container{width:min(1000px,92vw);margin:22px auto}
+.h1{font-size:22px;margin:10px 0 16px}
+.muted{color:var(--muted)}
+.spacer{flex:1}
+.row-gap{display:flex;gap:8px}
+
+.logo {
+height: 40px;  width: auto;   object-fit: contain; } 
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--stroke);background:linear-gradient(135deg,var(--brand),var(--brand2));backdrop-filter:blur(8px);position:sticky;top:0;z-index:10}
+.brand{font-weight:700;letter-spacing:.4px}
+.nav{display:flex;gap:12px;align-items:center}
+.navlink{color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:10px}
+.navlink.active{background:rgba(255,255,255,0.3);color:var(--text)}
+/* navbar hide on scroll */
+.topbar {
+  transition: transform 0.25s ease;
+}
+
+.topbar.hide {
+  transform: translateY(-100%);
+}
+
+.topbar.show {
+  transform: translateY(0);
+}
+
+/* logo size */
+.logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.btn{border:1px solid var(--stroke);background:var(--panel);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer}
+.btn:hover{filter:brightness(1.05)}
+.btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand2));border:none;color:#fff}
+.btn.ghost{background:transparent}
+
+.card{box-shadow: 0 6px 18px rgba(255, 182, 193, 0.3);background:var(--panel);border:1px solid var(--stroke);border-radius:14px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.form{display:grid;gap:10px;margin-bottom:16px}
+.input,.textarea{width:100%;background:#fff;border:1px solid var(--stroke);color:var(--text);padding:10px 12px;border-radius:10px;outline:none}
+.input:focus,.textarea:focus{border-color:var(--brand2)}
+.textarea{resize:vertical}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+
+.post{display:grid;gap:10px}
+.post-header{display:flex;gap:10px;align-items:center}
+.avatar{width:36px;height:36px;border-radius:11px;background:#1a2230;display:grid;place-items:center;font-weight:700;color:var(--brand2)}
+.post-author{font-weight:600}
+.post-title{color:var(--muted);font-size:14px}
+.post-body{margin:4px 0 8px;color:#d9e3f0}
+.post-actions{display:flex;gap:8px}
+
+.comment-box{display:flex;gap:8px;margin-top:8px;background: #fff;color:var(--text)}
+.comments{list-style:none;padding:0;margin:8px 0 0}
+.comment{padding:6px 8px;border:1px solid var(--stroke);border-radius:8px;margin-bottom:6px;background:#fff}
+
+.authwrap{display:grid;place-items:center;margin-top:10vh}
+.auth{width:min(420px,92vw)}
+.error{color:#ff7b7b}
+
+.history{margin:0;padding-left:16px}
+.footer{padding:18px;border-top:1px solid var(--stroke);color:var(--muted);text-align:center}
+
+/* ---- Chatbot typing animation ---- */
+.typing .bubble-text {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background-color: #888;
+  border-radius: 50%;
+  animation: blink 1.4s infinite both;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0; }
+  40% { opacity: 1; }
+}
+
+/* mood */
+
+/* Date — keep light and small */
+.muted {
+  color: #6e6e6e;
+  font-size: 0.85rem;
+}
+
+/* Note — darker and bigger */
+.note-text {
+  color: #222;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* PostCard Images */
+.post img.post-image {
+  width: 100%;          /* Make image fit card width */
+  max-width: 400px;     /* Optional: max width for large screens */
+  max-height: 3500px;    /* Limit height */
+  object-fit: contain;  /* Show entire image without cropping */
+  border-radius: 12px;
+  margin: 0.5rem 0;
+  display: block;
+ border: 0.1px solid #9d9b9b;}
+
