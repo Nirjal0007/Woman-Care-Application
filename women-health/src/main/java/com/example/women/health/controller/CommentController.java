@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/comments")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class CommentController {
 
     private final CommentService service;
@@ -18,19 +18,19 @@ public class CommentController {
         this.service = service;
     }
 
-    // Get comments by post
+    // Get all comments for a post
     @GetMapping("/post/{postId}")
     public ResponseEntity<List<Comment>> getCommentsByPost(@PathVariable Long postId) {
-        return ResponseEntity.ok(service.getByPostId(postId));
+        return ResponseEntity.ok(service.getCommentsByPostId(postId));
     }
 
-    // Get replies by parent comment
+    // Get replies
     @GetMapping("/replies/{parentId}")
     public ResponseEntity<List<Comment>> getReplies(@PathVariable Long parentId) {
         return ResponseEntity.ok(service.getReplies(parentId));
     }
 
-    // Add comment or reply
+    // Add new comment or reply
     @PostMapping
     public ResponseEntity<Comment> addComment(@RequestBody Comment comment) {
         return ResponseEntity.ok(service.add(comment));
