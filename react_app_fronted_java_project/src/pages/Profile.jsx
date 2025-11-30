@@ -13,6 +13,9 @@ export default function Profile() {
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // ⭐ Add TAB state (posts / favs)
+  const [tab, setTab] = useState("posts"); // default is Your Posts
+
   useEffect(() => {
     async function loadData() {
       const [allPosts, allUsers] = await Promise.all([getPosts(), getUsers()]);
@@ -30,13 +33,8 @@ export default function Profile() {
         };
       };
 
-      const myPosts = allPosts
-        .filter((p) => p.authorId === user?.id)
-        .map(enrich);
-
-      const favs = allPosts
-        .filter((p) => p.favs?.includes(user?.id))
-        .map(enrich);
+      const myPosts = allPosts.filter((p) => p.authorId === user?.id).map(enrich);
+      const favs = allPosts.filter((p) => p.favs?.includes(user?.id)).map(enrich);
 
       setPosts(myPosts);
       setFavPosts(favs);
@@ -111,23 +109,16 @@ export default function Profile() {
     }
   }
 
-  const getAuthorName = (id) =>
-    users.find((u) => u.id === id)?.name || "Unknown User";
+  const getAuthor = (id) => users.find((u) => u.id === id);
 
   if (!user) return <p>Please log in.</p>;
 
   return (
     <section className="profile-section" style={{ maxWidth: 700, margin: "0 auto" }}>
       
-      {/* PROFILE HEADER */}
-      <div
-        className="profile-header card"
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          padding: "1rem",
-          alignItems: "center",
-        }}
+      {/* ---- PROFILE HEADER ---- */}
+      <div className="profile-header card"
+        style={{ display: "flex", justifyContent: "space-between", padding: "1rem", alignItems: "center" }}
       >
         <div style={{ display: "flex", alignItems: "center" }}>
           {user.avatar ? (
@@ -167,7 +158,6 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* SMALL Edit Button */}
         <button
           className="btn secondary"
           style={{
@@ -182,19 +172,14 @@ export default function Profile() {
         </button>
       </div>
 
-      {/* EDIT FORM */}
+      {/* ---- EDIT FORM ---- */}
       {editing && (
         <form className="card form" onSubmit={saveProfile} style={{ padding: "1rem" }}>
           <label>Name</label>
           <input className="input" value={name} onChange={(e) => setName(e.target.value)} />
 
           <label>Bio</label>
-          <textarea
-            className="textarea"
-            rows={3}
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-          />
+          <textarea className="textarea" rows={3} value={bio} onChange={(e) => setBio(e.target.value)} />
 
           <label>Profile Picture</label>
           <input type="file" accept="image/*" onChange={uploadAvatar} />
@@ -207,26 +192,37 @@ export default function Profile() {
 
       {msg && <div style={{ textAlign: "center", marginBottom: "1rem" }}>{msg}</div>}
 
-      {/* YOUR POSTS */}
-      <h3>Your Posts</h3>
-      {posts.length === 0 ? (
-        <p style={{ color: "gray" }}>No posts yet.</p>
-      ) : (
-        posts.map((p) => (
-  <div key={p.id} style={{ marginBottom: "1rem" }}>
-    <PostCard post={p} posts={posts} setPosts={setPosts} editable={true} />
-  </div>
-))
+      {/* ⭐⭐ TABS FOR POSTS / FAVS ⭐⭐ */}
+      <div style={{ display: "flex", gap: "1rem", marginTop: "1.5rem" }}>
+        <button
+          className="btn secondary"
+          onClick={() => setTab("posts")}
+          style={{ background: tab === "posts" ? "#ddd" : "" }}
+        >
+          Your Posts
+        </button>
 
-      )}
+        <button
+          className="btn secondary"
+          onClick={() => setTab("favs")}
+          style={{ background: tab === "favs" ? "#ddd" : "" }}
+        >
+          Favourite Posts
+        </button>
+      </div>
 
-      {/* FAVOURITE POSTS */}
-      <h3 style={{ marginTop: "2rem" }}>Your Favourite Posts</h3>
+      {/* ⭐⭐ FAVOURITE POSTS ⭐⭐ */}
+{tab === "favs" && (
+  <>
+    <h3 style={{ marginTop: "1rem" }}>❤️ Your Favourite Posts</h3>
 
-      {favPosts.length === 0 ? (
-        <p style={{ color: "gray" }}>No favourite posts yet.</p>
-      ) : (
-        favPosts.map((post) => (
+    {favPosts.length === 0 ? (
+      <p style={{ color: "gray" }}>No favourite posts yet.</p>
+    ) : (
+      favPosts.map((post) => {
+        const author = getAuthor(post.authorId);
+
+        return (
           <div
             key={post.id}
             className="card"
@@ -234,9 +230,9 @@ export default function Profile() {
               marginBottom: "1rem",
               padding: "1rem",
               position: "relative",
+              border: "1px solid #ddd",
             }}
           >
-            {/* Remove Favourite Button - top right */}
             <button
               className="btn danger"
               style={{
@@ -251,13 +247,84 @@ export default function Profile() {
               Remove
             </button>
 
-            <p style={{ fontWeight: "bold", color: "#555" }}>
-              @{getAuthorName(post.authorId)}
-            </p>
-            <h4>{post.title}</h4>
-            <p>{post.body}</p>
+            {/* AUTHOR INFO */}
+            <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
+              {author?.avatar ? (
+                <img
+                  src={`http://localhost:8080/uploads/${author.avatar}`}
+                  alt=""
+                  style={{
+                    width: 35,
+                    height: 35,
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    marginRight: 10,
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: 35,
+                    height: 35,
+                    borderRadius: "50%",
+                    background: "#ccc",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginRight: 10,
+                  }}
+                >
+                  {author?.name?.charAt(0) || "U"}
+                </div>
+              )}
+
+              <span style={{ fontWeight: "bold" }}>@{author?.name || "Unknown"}</span>
+            </div>
+
+            {/* ⭐ TITLE ON TOP ⭐ */}
+            <h4 style={{ marginBottom: "0.5rem" }}>{post.title}</h4>
+
+            <p style={{ marginBottom: "0.8rem" }}>{post.body}</p>
+
+            {/* ⭐ IMAGE AT BOTTOM WITH BETTER CSS ⭐ */}
+            {post.image && (
+              <img
+                src={`http://localhost:8080/uploads/${post.image}`}
+                alt=""
+                style={{
+                     width: "100%",
+                      maxWidth: "400px",
+                      maxHeight: "3500px",
+                      objectFit: "contain",
+                      borderRadius: "12px",
+                      margin: "0.5rem 0",
+                      display: "block",
+                      border: "0.1px solid #9d9b9b",
+                }}
+              />
+            )}
           </div>
-        ))
+        );
+      })
+    )}
+  </>
+)}
+
+      {/* ⭐⭐ YOUR POSTS ⭐⭐ */}
+      {tab === "posts" && (
+        <>
+          <h3 style={{ marginTop: "2rem" }}>Your Posts</h3>
+
+          {posts.length === 0 ? (
+            <p style={{ color: "gray" }}>No posts yet.</p>
+          ) : (
+            posts.map((p) => (
+              <div key={p.id} style={{ marginBottom: "1rem" }}>
+                <PostCard post={p} posts={posts} setPosts={setPosts} editable={true} />
+              </div>
+            ))
+          )}
+        </>
       )}
     </section>
   );
