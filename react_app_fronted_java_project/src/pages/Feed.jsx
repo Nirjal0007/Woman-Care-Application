@@ -9,8 +9,11 @@ export default function Feed() {
   const [body, setBody] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const [search, setSearch] = useState(""); // search text
+
   const me = JSON.parse(localStorage.getItem("currentUser"));
 
+  // Load posts & users
   useEffect(() => {
     async function load() {
       try {
@@ -36,7 +39,39 @@ export default function Feed() {
     load();
   }, []);
 
-  // ✅ Publish post with optional image
+  // Watch localStorage search changes — LIVE SEARCH
+  useEffect(() => {
+    // Load initial search
+    setSearch(localStorage.getItem("search") || "");
+
+    // Listen to changes
+    function handleStorage(e) {
+      if (e.key === "search") {
+        setSearch(e.newValue || "");
+      }
+    }
+    window.addEventListener("storage", handleStorage);
+
+    // Small ticker so search updates instantly (React quirk)
+    const interval = setInterval(() => {
+      const s = localStorage.getItem("search") || "";
+      setSearch(s);
+    }, 300);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Filter posts
+  const filteredPosts = posts.filter((p) =>
+    p.title.toLowerCase().includes(search.toLowerCase()) ||
+    p.body.toLowerCase().includes(search.toLowerCase()) ||
+    p.authorName.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Publish post
   async function publish(e) {
     e.preventDefault();
     if (!title.trim() || !body.trim()) return alert("Title and body are required!");
@@ -50,7 +85,6 @@ export default function Feed() {
 
       if (image) formData.append("image", image);
 
-      // Make sure the endpoint matches your backend
       const res = await fetch("http://localhost:8080/api/posts/add-with-image", {
         method: "POST",
         body: formData,
@@ -107,10 +141,10 @@ export default function Feed() {
 
       {/* Posts List */}
       <div>
-        {posts.length === 0 ? (
-          <p className="muted">No posts yet. Start by sharing something!</p>
+        {filteredPosts.length === 0 ? (
+          <p className="muted">No posts found.</p>
         ) : (
-          posts.map((p) => (
+          filteredPosts.map((p) => (
             <div key={p.id} style={{ marginBottom: "1.25rem" }}>
               <PostCard post={p} posts={posts} setPosts={setPosts} editable={p.authorId === me.id} />
             </div>

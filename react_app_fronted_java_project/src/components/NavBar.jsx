@@ -7,16 +7,14 @@ export default function NavBar() {
 
   const [show, setShow] = useState(true);
   const [lastScroll, setLastScroll] = useState(0);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     function handleScroll() {
       const current = window.scrollY;
 
-      if (current > lastScroll) {
-        setShow(false);
-      } else {
-        setShow(true);
-      }
+      if (current > lastScroll) setShow(false);
+      else setShow(true);
 
       setLastScroll(current);
     }
@@ -25,18 +23,40 @@ export default function NavBar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScroll]);
 
+  useEffect(() => {
+    const saved = localStorage.getItem("search") || "";
+    setSearch(saved);
+  }, []);
+
   function logout() {
     localStorage.removeItem("currentUser");
     navigate("/login");
   }
 
+  function handleSearch(e) {
+    const value = e.target.value;
+    setSearch(value);
+    localStorage.setItem("search", value);
+  }
+
   return (
     <header className={`topbar ${show ? "show" : "hide"}`}>
-      {/* Wrap the logo with Link → Feed page */}
+      {/* Logo */}
       <Link to="/feed">
         <img src="/logo1.png" className="logo" alt="logo" style={{ cursor: "pointer" }} />
       </Link>
 
+      {/* Search Bar */}
+      {user && (
+        <input
+          className="nav-search"
+          placeholder="Search posts…"
+          value={search}
+          onChange={handleSearch}
+        />
+      )}
+
+      {/* Navigation */}
       {user ? (
         <nav className="nav">
           <NavLink className="navlink" to="/feed">Feed</NavLink>

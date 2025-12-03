@@ -133,3 +133,19 @@ height: 40px;  width: auto;   object-fit: contain; }
  border: 0.1px solid #9d9b9b;
 }
 
+.nav-search {
+  width: 280px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid #ffd1e8;
+  background: #fff0f7;
+  font-size: 15px;
+  outline: none;
+  transition: 0.2s ease;
+  margin-right: 1.2rem;
+}
+
+.nav-search:focus {
+  border-color: #ff7ebb;
+  background: #ffe6f2;
+}
